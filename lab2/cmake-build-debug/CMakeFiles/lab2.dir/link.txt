@@ -1,1 +1,0 @@
-/usr/bin/gcc  -O3 -g CMakeFiles/lab2.dir/list.c.o -o lab2 

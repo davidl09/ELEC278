@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdint.h>
 
 // Null for an empty list.
 typedef struct list_node *list;
@@ -129,8 +130,9 @@ int main() {
     }
 
     int count = 0;
-    time_t start = time(NULL);
-    while(count++ < 1) {
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+    while(count++ < 10000000) {
 
 
         //printf("Original list:\n");
@@ -148,7 +150,10 @@ int main() {
         remove_adjacent_duplicates(&numbers);
         //print_list(numbers);
     }
-    printf("Time taken: %ld\n", time(NULL) - start);
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+
+    uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
+    printf("Time taken: %ld", delta_us);
     delete_list(&numbers);
 
 

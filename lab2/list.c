@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdint.h>
+#include <assert.h>
 
 // Null for an empty list.
 typedef struct list_node *list;
@@ -50,7 +51,7 @@ bool remove_at(iterator iter) {
 
 // Checks whether the iterator is at the end of the list.
 bool at_end(iterator iter) {
-    return *iter == NULL;
+    return (*iter)->tail == NULL;
 }
 
 // Gets the value at an iterator.
@@ -62,11 +63,18 @@ int get(iterator iter) {
 // Advances an iterator to the next position.
 // Returns false if the iterator is at the end of the list.
 bool next(iterator *iter) {
-    if (at_end(*iter))
+    if (!iter || !*iter || at_end(*iter))
         return false;
 
     *iter = &(**iter)->tail;
     return true;
+}
+
+void append(iterator i, int val) {
+    while (next(&i)); //move i to end of list
+    (*i)->tail = malloc(sizeof(list_node));
+    assert(*i); //check that memory allocation worked
+    (*i)->tail->value = val;
 }
 
 // Prints the contents of the list.
@@ -88,12 +96,16 @@ void swap_adjacent(list *nums) {
 // Duplicates all items in the list end to end.
 void double_list(list *nums) {
     iterator i = nums;
-    while(*i) {
-        insert_at(i, (*i)->value);
-        next(&i);
-        next(&i);
-    }
+    iterator j = nums;
+    while(next(&j)); //move j to point to last element
 
+    list end = *i; //mark end of current list
+
+    do {
+        append(j, (*i)->value);
+        next(&j);
+        next(&i);
+    } while (*i != end && next(&i));
 }
 
 // Removes adjacent duplicate items in the list.
@@ -129,31 +141,22 @@ int main() {
         temp = temp->tail = make_node(NULL, *ptr);
     }
 
-    int count = 0;
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-    while(count++ < 10000000) {
+    printf("Original list:\n");
+    print_list(numbers);
+
+    printf("Swapping adjacent items:\n");
+    swap_adjacent(&numbers);
+    print_list(numbers);
+
+    printf("Duplicating all items:\n");
+    double_list(&numbers);
+    print_list(numbers);
+
+    printf("Removing adjacent duplicates:\n");
+    remove_adjacent_duplicates(&numbers);
+    print_list(numbers);
 
 
-        //printf("Original list:\n");
-        //print_list(numbers);
-
-        //printf("Swapping adjacent items:\n");
-        swap_adjacent(&numbers);
-        //print_list(numbers);
-
-        //printf("Duplicating all items:\n");
-        double_list(&numbers);
-        //print_list(numbers);
-
-        //printf("Removing adjacent duplicates:\n");
-        remove_adjacent_duplicates(&numbers);
-        //print_list(numbers);
-    }
-    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-
-    uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
-    printf("Time taken: %ld", delta_us);
     delete_list(&numbers);
 
 

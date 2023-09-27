@@ -29,7 +29,7 @@ Node *make_node_ptr(Node *new_next, int val) {
 }
 
 bool next(Node **root) {
-    if((*root)->next) {
+    if(root && *root && (*root)->next) {
         *root = (*root)->next;
         return true;
     }
@@ -83,7 +83,6 @@ size_t list_size(Node* root) {
 }
 
 void swap_adjacent(Node *root) {
-
     do {
         if(!(root && root->next)) return;
         //XOR swap
@@ -94,8 +93,10 @@ void swap_adjacent(Node *root) {
 }
 
 void double_list(Node *root) {
+    Node *end = root;
+    while(next(&end)); //move iterator to end of list
     do {
-        insert_node(root, 1, root->val);
+        append(root, root->val);
     } while (next(&root) && next(&root));
 }
 
@@ -109,7 +110,6 @@ void remove_adjacent_duplicates(Node *root) {
 }
 
 void print(Node *root) {
-    printf("Size: %ld\n", list_size(root));
     if(root == NULL) return;
     do {
         printf("%d\n", root->val);
@@ -123,27 +123,21 @@ int main() {
     for (int i = 1; i < 7; i++) {
         append(root, data[i]);
     }
+    printf("Original list:\n");
+    print(root);
 
-    int count = 0;
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-    while(count++ < 10000000) {
-        //print(root);
+    printf("Swapping adjacent items:\n");
+    swap_adjacent(root);
+    print(root);
 
-        swap_adjacent(root);
+    printf("Duplicating all items:\n");
+    double_list(root);
+    print(root);
 
-        //print(root);
+    printf("Removing adjacent duplicates:\n");
+    remove_adjacent_duplicates(root);
+    print(root);
 
-        double_list(root);
-
-        //print(root);
-
-        remove_adjacent_duplicates(root);
-    }
-    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-
-    uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
-    printf("Time taken: %ld", delta_us);
     free_to_tail(&root);
 
 

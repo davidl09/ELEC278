@@ -278,8 +278,8 @@ int main() {
                     if (edit_position > 0) {
                         edit_position--;
                         edit_text_length--;
-                        memmove(edit_text + edit_position, edit_text + edit_position + 1,
-                                edit_text_length - edit_position);
+                        //memmove(edit_text + edit_position, edit_text + edit_position + 1,
+                        //        edit_text_length - edit_position);
                     }
                     continue;
                 case KEY_DC:

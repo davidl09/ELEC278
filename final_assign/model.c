@@ -11,7 +11,7 @@ void model_init() {
 void set_cell_value(ROW row, COL col, char *text) {
     // TODO: implement this.
 
-    // This just displays the text without saving it in any data structure. You will need to change this.
+    // This just displays the text without saving it in any buffer structure. You will need to change this.
     update_cell_display(row, col, text);
     free(text);
 }
@@ -19,7 +19,7 @@ void set_cell_value(ROW row, COL col, char *text) {
 void clear_cell(ROW row, COL col) {
     // TODO: implement this.
 
-    // This just clears the display without updating any data structure. You will need to change this.
+    // This just clears the display without updating any buffer structure. You will need to change this.
     update_cell_display(row, col, "");
 }
 

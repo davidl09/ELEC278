@@ -10,9 +10,15 @@ add_library(model OBJECT
         model.h
 )
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        add_compile_definitions(DEBUG)
+endif ()
+
 add_executable(interactive
         interface.c
 )
+
+add_executable(test1 display.c)
 
 add_executable(testrunner
         testrunner.c
@@ -26,12 +32,13 @@ if(${MINGW})
         cmake_path(GET CMAKE_C_COMPILER PARENT_PATH BIN_DIR)
         cmake_path(GET BIN_DIR PARENT_PATH MINGW_DIR)
         message(MINGW_DIR=${MINGW_DIR})
-        target_include_directories(interactive PUBLIC ${MINGW_DIR}/opt/include ${MINGW_DIR}/opt/include/ncursesw)
+        target_include_directories(interactive PUBLIC ${MINGW_DIR}/displayopt/include ${MINGW_DIR}/opt/include/ncursesw)
         target_link_directories(interactive PUBLIC ${MINGW_DIR}/opt/lib)
         target_link_libraries(interactive ncursesw model)
 else()
         find_package(Curses REQUIRED)
         target_include_directories(interactive PUBLIC ${CURSES_INCLUDE_DIR})
         target_link_libraries(interactive ${CURSES_LIBRARIES} model)
+        target_link_libraries(test1 ${CURSES_LIBRARIES})
 endif()
 

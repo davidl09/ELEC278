@@ -3,6 +3,8 @@ project(assignment C)
 
 set(CMAKE_C_STANDARD 11)
 
+add_compile_options("-Og" "-Wall" "-Werror")
+
 add_library(model OBJECT
         defs.h
         interface.h
@@ -18,7 +20,9 @@ add_executable(interactive
         interface.c
 )
 
-add_executable(test1 display.c)
+add_executable(test1 sheet.c
+        display.c
+        display.h)
 
 add_executable(testrunner
         testrunner.c

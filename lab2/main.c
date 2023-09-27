@@ -94,10 +94,15 @@ void swap_adjacent(Node *root) {
 
 void double_list(Node *root) {
     Node *end = root;
+
     while(next(&end)); //move iterator to end of list
-    do {
-        append(root, root->val);
-    } while (next(&root) && next(&root));
+
+    int size = (int)list_size(root);
+    for (int i = 0; i < size; i++) {
+        append(end, root->val);
+        next(&end);
+        next(&root);
+    }
 }
 
 void remove_adjacent_duplicates(Node *root) {

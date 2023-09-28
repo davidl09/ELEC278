@@ -1,4 +1,5 @@
 #include "sheet.h"
+#include "display.h"
 
 void handle_alloc_fail() {
 #ifdef DEBUG
@@ -38,10 +39,11 @@ pointer(cell) make_cell() { //allocates memory in the cell buffer
     return temp;
 }
 
-void delete_cell(pointer(cell) this) {
+void free_cell(pointer(cell) this) {
     assert(this);
     assert(this->buffer);
     free(this->buffer);
+    this->buffer = NULL;
     free(this);
 }
 
@@ -59,8 +61,17 @@ pointer(sheet) init_sheet(pointer(sheet) this, int rows, int columns) {
     return this;
 }
 
+void free_sheet(pointer(sheet) this) {
+    assert(this->cells);
+    for(int i = 0; i < this->rows * this->columns; i++) {
+        free_cell(&(this->cells[i]));
+    }
+    this->cells = NULL;
+    free(this);
+}
+
 
 int main() {
-    pointer(sheet) test = make_sheet(10, 10);
-    printf("%d\n", test->cells[0].bufsize);
+    pointer(display) display_1 = make_display();
+    printf("%d\n", display_1->char_col_count);
 }

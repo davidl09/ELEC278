@@ -3,7 +3,7 @@ project(assignment C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_compile_options("-Og" "-Wall" "-Werror")
+add_compile_options("-Og" "-Wall")
 
 add_library(model OBJECT
         defs.h

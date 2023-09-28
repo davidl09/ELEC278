@@ -33,11 +33,6 @@ typedef struct sheet {
 
 pointer(sheet) make_sheet(int, int);
 pointer(sheet) init_sheet(pointer(sheet) this, int rows, int columns);
-
-typedef struct display {
-    int linecount;
-    int charcount;
-    sheet datasheet;
-} display;
+void free_sheet(pointer(sheet) this);
 
 #endif //ASSIGNMENT_SHEET_H

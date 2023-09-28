@@ -5,7 +5,7 @@ void handle_alloc_fail() {
 #ifdef DEBUG
     fprintf(stderr, "MEMORY ALLOCATION FAILED\n");
 #endif
-    exit(EXIT_FAILURE);
+    exit(ENOMEM);
 }
 
 int realloc_n(void **old, int num, int sizeofthing) {
@@ -39,12 +39,11 @@ pointer(cell) make_cell() { //allocates memory in the cell buffer
     return temp;
 }
 
-void free_cell(pointer(cell) this) {
+void free_cell(pointer(cell) this) { //frees buffer owned by cell
     assert(this);
     assert(this->buffer);
     free(this->buffer);
     this->buffer = NULL;
-    free(this);
 }
 
 pointer(sheet) make_sheet(int rows, int columns) {
@@ -61,17 +60,13 @@ pointer(sheet) init_sheet(pointer(sheet) this, int rows, int columns) {
     return this;
 }
 
-void free_sheet(pointer(sheet) this) {
-    assert(this->cells);
-    for(int i = 0; i < this->rows * this->columns; i++) {
-        free_cell(&(this->cells[i]));
+void free_sheet(handle(sheet) this) {
+    assert((*this)->cells);
+    for (int i = 0; i < (*this)->columns * (*this)->rows; i++) {
+        free_cell(&(*this)->cells[i]);
     }
-    this->cells = NULL;
-    free(this);
-}
-
-
-int main() {
-    pointer(display) display_1 = make_display();
-    printf("%d\n", display_1->char_col_count);
+    free((*this)->cells);
+    (*this)->cells = NULL;
+    free(*this);
+    *this = NULL;
 }

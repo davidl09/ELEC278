@@ -10,13 +10,13 @@
 typedef struct display {
     int line_count;
     int char_col_count;
-    sheet datasheet;
+    pointer(sheet) datasheet;
 } display;
 
 
 pointer(display) make_display();
 pointer(display) init_display(pointer(display) this, int rows, int columns);
-void free_display(pointer(display) this);
+void free_display(handle(display) this);
 
 
 

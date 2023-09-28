@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <curses.h>
+#include <asm-generic/errno-base.h>
 
 #define pointer(thing) thing*
+#define handle(thing) pointer(pointer(thing))
 
 void handle_alloc_fail();
 int realloc_n(void **old, int num, int sizeofthing);
@@ -33,6 +35,6 @@ typedef struct sheet {
 
 pointer(sheet) make_sheet(int, int);
 pointer(sheet) init_sheet(pointer(sheet) this, int rows, int columns);
-void free_sheet(pointer(sheet) this);
+void free_sheet(handle(sheet) this);
 
 #endif //ASSIGNMENT_SHEET_H

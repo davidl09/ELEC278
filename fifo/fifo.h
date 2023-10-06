@@ -16,7 +16,7 @@ size_t capacity;\
 \
 fifo_##T fifo_##T##_make(size_t buf_size) {\
     fifo_##T temp;\
-    temp.base_ptr = temp.remove_ptr = temp.insert_ptr = malloc(buf_size);\
+    temp.base_ptr = temp.remove_ptr = temp.insert_ptr = calloc(buf_size, sizeof(T));\
     temp.capacity = buf_size;\
     return temp;\
 }\

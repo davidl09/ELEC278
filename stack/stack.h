@@ -3,6 +3,7 @@
 //
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define DEFINE_STACK(type)                      \
 typedef struct {                                \
@@ -12,14 +13,17 @@ typedef struct {                                \
     size_t capacity;                            \
 } type##_stack;                                 \
 type##_stack make_##type##_stack() {            \
-type *temp = calloc(16, sizeof(type));          \
+type *temp = malloc(16 * sizeof(type));         \
 return (type##_stack){temp, temp, 0, 16};       \
 };                                              \
 void type##_stack_grow(type##_stack *stack) {   \
-type *temp = realloc                            \
-(stack->base,                                   \
-(stack->capacity = 2 * stack->capacity));       \
+type *temp = malloc                             \
+(2 * stack->capacity * sizeof(type));           \
 if(temp) {                                      \
+memcpy(temp, stack->base,                       \
+2 * stack->capacity * sizeof(type));            \
+stack->capacity *= 2;                           \
+free(stack->base);                              \
 stack->base = temp;                             \
 stack->sp = stack->base + stack->size;          \
 }                                               \

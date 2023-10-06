@@ -4,49 +4,52 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 
-typedef struct FUNC_NAME(stack) {
-    T *base;
-    T * sp;
-    size_t size;
-    size_t capacity;
-} FUNC_NAME(stack);
+typedef struct {                                
+    int *base;
+    int *sp;                                   
+    size_t size;                                
+    size_t capacity;                            
+} int_stack;    
 
-FUNC_NAME(stack) FUNC_NAME(make_stack)(){
-    FUNC_NAME(stack) result;
-    result.base = calloc(16, sizeof(T));
-    result.sp = result.base;
-    result.size = 0;
-    result.capacity = 32;
-    return result;
-}
+int_stack make_int_stack() {            
+    int *temp = malloc(16 * sizeof(int));
+    return (int_stack){temp, temp, 0, 16};       
+};
 
-void FUNC_NAME(stack_grow)(FUNC_NAME(stack) *stack) {
-    //doubles the stack's capacity
-    T *temp = realloc(stack->base, (stack->capacity = 2 * stack->capacity));
+void int_stack_grow(int_stack *stack) {
+    int *temp = malloc(sizeof(int) * 2 * stack->capacity);
     if(temp) {
+        memcpy(temp, stack->base, stack->capacity * sizeof(int));
+        free(stack->base);
         stack->base = temp;
         stack->sp = stack->base + stack->size;
+        stack->capacity *= 2;
     }
     else exit(EXIT_FAILURE);
 }
 
-void FUNC_NAME(stack_push)(FUNC_NAME(stack) *stack, T value) {
+void int_stack_push(int_stack *stack, int value) {
     if (stack->size >= stack->capacity)
-        FUNC_NAME(stack_grow)(stack);
-    *(stack->sp)++ = value;
+        int_stack_grow(stack);
+    *(stack->sp) = value;
+    stack->sp++;
     ++stack->size;
-}
-
-T FUNC_NAME(stack_pop)(FUNC_NAME(stack) *stack) {
-    assert(stack->size > 0);
-    stack->size--;
-    stack->sp--;
-    return *stack->sp;
-}
-
-void FUNC_NAME(stack_delete)(FUNC_NAME(stack) *stack) {
-    free(stack->base);
-    stack->capacity = stack->size = 0;
+}                                               
+int int_stack_pop(int_stack *stack){     
+    if(stack->size == 0) {
+        fprintf(stderr, "Error: "
+        "Tried popping from empty stack");
+        exit(EXIT_FAILURE);
+    }
+    --stack->size;
+    --stack->sp;
+    return *(stack->sp);
+}                                               
+void int_stack_delete(int_stack *stack) { 
+    free(stack->base);                          
+    stack->size = 0;                            
+    stack->capacity = 0;                        
 }

@@ -1,0 +1,1 @@
+/usr/bin/gcc --coverage -g CMakeFiles/stack.dir/main.c.o -o stack 

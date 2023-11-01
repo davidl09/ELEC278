@@ -78,5 +78,5 @@ bool dequeue(struct queue *q, int *out) {
 }
 
 bool queue_empty(struct queue *q) {
-    return q->length;
+    return q->length == 0;
 }

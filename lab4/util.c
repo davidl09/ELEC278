@@ -6,6 +6,6 @@ bool starts_with(const char *str, const char *prefix) {
 }
 
 void skip_whitespace(const char **input) {
-    while (isspace(**input))
+    while (input && *input && isspace(**input))
         ++*input;
 }

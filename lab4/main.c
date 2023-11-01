@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     };
     init_queue(&ctx.q);
 
-    char *data = malloc(65536);
+    char data[1024];
 
     const char *input = data;
     struct error err = {
@@ -72,7 +72,5 @@ int main(int argc, char **argv) {
             print_err(data, err);
         }
     }
-
-    free(data);
     return 0;
 }

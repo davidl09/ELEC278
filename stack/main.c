@@ -3,6 +3,8 @@
 #include "stack.h"
 
 DEFINE_STACK(char)
+
+DEFINE_STACK(int)
 int main() {
     char_stack myStack = make_char_stack();
 

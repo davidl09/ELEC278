@@ -1,3 +1,0 @@
-/home/davidl09/ELEC278/stack/cmake-build-debug-coverage/CMakeFiles/stack.dir
-/home/davidl09/ELEC278/stack/cmake-build-debug-coverage/CMakeFiles/edit_cache.dir
-/home/davidl09/ELEC278/stack/cmake-build-debug-coverage/CMakeFiles/rebuild_cache.dir

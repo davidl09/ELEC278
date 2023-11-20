@@ -6,7 +6,7 @@
 
 typedef struct heap_element {
     int priority;
-    const char *data;
+    const void *data;
 } heap_element;
 
 typedef struct heap {
@@ -248,7 +248,7 @@ int main() {
     print_heap(h);
 
     for (size_t i = 0; i < h.length; i++)
-        printf("%d: %d %s\n", (int) i, h.data[i].priority, h.data[i].data);
+        printf("%d: %d %s\n", (int) i, h.data[i].priority, (const char *)h.data[i].data);
 
     puts("Processing all elements according to priority:");
 

@@ -84,6 +84,27 @@ void heap_up(heap *h, size_t index) {
         heap_swap(&h->data[index], &h->data[parent]);
         index = parent;
     }
+
+
+}
+
+bool is_valid_minheap_elem(heap h, size_t index) {
+    if (h.length == 1 || h.length == index + 1) return true; //if size 1 or last element return true
+    if (h.length <= index) return true;
+
+    const size_t middle_child = middle_child_of(index);
+    const size_t right_child = right_child_of(index);
+    const size_t left_child = left_child_of(index);
+
+    const bool hasMiddle = middle_child < h.length; //always true if hasRight is true
+    const bool hasRight = right_child < h.length;
+    const bool hasLeft = left_child < h.length;
+
+    return (
+            (!hasLeft || h.data[left_child_of(index)].priority >= h.data[index].priority && is_valid_minheap_elem(h, left_child_of(index))) &&
+            (!hasMiddle || (h.data[middle_child_of(index)].priority >= h.data[index].priority && is_valid_minheap_elem(h, middle_child))) &&
+            (!hasRight || (h.data[right_child_of(index)].priority >= h.data[index].priority && is_valid_minheap_elem(h, right_child)))
+    );
 }
 
 // Move the element at the given index down the heap until it is in the correct position.
@@ -101,7 +122,7 @@ void heap_down(heap *h, size_t index) {
 
 /*
  * Four possible cases:
- *      1. No children, break;
+ *      1. No children, break; (handled above)
  *      2. Only Left child, check if ordered and swap accordingly
  *      3. Left and Middle child, check if ordered with middle then left and swap accordingly
  *      4. Left and Middle and Right, check all three and swap accordingly
@@ -111,44 +132,24 @@ void heap_down(heap *h, size_t index) {
         const bool hasRight = right_child < h->length;
         if (hasRight) {assert(hasMiddle);}
 
-        if (hasRight && h->data[right_child].priority < h->data[index].priority) {
-            heap_swap(&h->data[right_child], &h->data[index]);
-            index = right_child;
+        heap_element *least = NULL;
+        if (hasRight) {
+            least =
+                    (h->data[right_child].priority <= h->data[middle_child].priority ?
+                     &h->data[right_child] :
+                        (h->data[middle_child].priority <= h->data[left_child].priority ?
+                         &h->data[middle_child] : &h->data[left_child]));
         }
-        else if (hasMiddle && h->data[middle_child].priority < h->data[index].priority) {
-            heap_swap(&h->data[middle_child], &h->data[index]);
-            index = middle_child;
+        else if (hasMiddle) {
+            least =
+                    (h->data[middle_child].priority <= h->data[left_child].priority ?
+                        &h->data[middle_child] : &h->data[left_child]);
         }
-        else if (h->data[left_child].priority < h->data[index].priority) {
-            heap_swap(&h->data[left_child], &h->data[index]);
-            index = left_child;
-        }
-        else break;
-/*
-        while (true) {
-        // If the left child does not exist, then neither does the right, so exit.
-        size_t left_child = left_child_of(index);
-        if (left_child >= h->length)
-            break;
-
-        // If the right child doesn't exist, or if the left child is higher priority, then only look at the left child.
-        size_t right_child = right_child_of(index);
-        if (right_child >= h->length || h->data[left_child].priority > h->data[right_child].priority) {
-            // If the element is incorrectly ordered with respect to the left child, then swap and continue.
-            if (h->data[index].priority < h->data[left_child].priority) {
-                heap_swap(&h->data[index], &h->data[left_child]);
-                index = left_child;
-            } else
-                break;
-        } else if (h->data[index].priority < h->data[right_child].priority) {
-            // Here, the element is incorrectly ordered with respect to the right child, so swap and continue.
-            heap_swap(&h->data[index], &h->data[right_child]);
-            index = right_child;
-        } else
-            break;
-    }
-*/
-
+        else  least = &h->data[left_child];
+        if (least->priority <= h->data[index].priority) {
+            heap_swap(least, &h->data[index]);
+            index = least - h->data;
+        } else break;
     }
 }
 
@@ -182,8 +183,8 @@ bool heap_remove(heap *h, int *priority_out, const char **data_out) {
     // Check if the heap is empty.
     if (h->length == 0)
         return false;
-    printf("Before removal: \n");
-    print_heap(*h);
+    /*printf("Before removal: \n");
+    print_heap(*h);*/
 
     // Extract root element.
     *priority_out = h->data[0].priority;
@@ -205,8 +206,8 @@ bool heap_remove(heap *h, int *priority_out, const char **data_out) {
             h->data = temp;
         } else exit(EXIT_FAILURE);
     }
-    printf("After removal: \n");
-    print_heap(*h);
+    /*printf("After removal: \n");
+    print_heap(*h);*/
 
     return true;
 }
@@ -219,18 +220,31 @@ int main() {
     };
 
     heap_insert(&h, 7, "this");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 3, "is");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 0, "an");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 9, "example");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 3, "piece");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 4, "of");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 8, "text");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 8, "to");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 2, "make");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 1, "sure");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 7, "your");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 5, "code");
+    assert(is_valid_minheap_elem(h, 0));
     heap_insert(&h, 3, "works");
+    assert(is_valid_minheap_elem(h, 0));
     print_heap(h);
 
     for (size_t i = 0; i < h.length; i++)
@@ -240,8 +254,10 @@ int main() {
 
     int priority;
     const char *data;
-    while (heap_remove(&h, &priority, &data))
+    while (heap_remove(&h, &priority, &data)) {
+        assert(is_valid_minheap_elem(h, 0));
         printf("%d %s\n", priority, data);
-
+    }
     return 0;
 }
+

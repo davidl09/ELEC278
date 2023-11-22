@@ -47,9 +47,8 @@ static void ensure_edit_text_capacity(size_t capacity) {
     edit_text_capacity = capacity;
 }
 
-int main() {
+int main(int argc, char **argv) {
     /* INITIALIZATION */
-
     // Initialize NCURSES.
     initscr();
 
@@ -311,6 +310,9 @@ int main() {
             }
         }
     }
+    model_clear();
+    exit_curses(0);
+    //free memory used by the data structure and by libncurses
 }
 
 void update_cell_display(ROW row, COL col, const char *text) {

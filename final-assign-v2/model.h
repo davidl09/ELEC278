@@ -8,6 +8,9 @@
 // This is called once, at program start.
 void model_init();
 
+//This frees memory associated with the data structure
+void model_clear();
+
 // Sets the value of a cell based on user input.
 //
 // The string referred to by 'text' is now owned by this function and/or the

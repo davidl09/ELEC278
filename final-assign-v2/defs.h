@@ -1,6 +1,9 @@
 #ifndef ASSIGNMENT_DEFS_H
 #define ASSIGNMENT_DEFS_H
 
+#include <stdbool.h>
+#include <string.h>
+
 #define NUM_ROWS 10
 #define NUM_COLS 7
 
@@ -28,5 +31,24 @@ typedef enum {
     COL_F,
     COL_G,
 } COL;
+
+typedef struct ROWCOL {
+    ROW row;
+    COL col;
+} ROWCOL;
+
+typedef enum {
+    NONE,
+    STR,
+    NUM,
+    EQN,
+} CELL_TYPE;
+
+typedef struct cell {
+    CELL_TYPE type;
+    double numval;
+    char *strval;
+
+} cell;
 
 #endif //ASSIGNMENT_DEFS_H

@@ -5,14 +5,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <assert.h>
 #include "stack.h"
 
-DEFINE_STACK(char);
 DEFINE_STACK(double)
 //using macro in stack.h, defines a stack datastructure which can function with any type (avoids the need for generic stack with void * and callbacks)
-
-const static size_t MAXLEN = 100;
 
 cell sheet[NUM_ROWS][NUM_COLS] = {0};
 
@@ -20,23 +16,6 @@ char *skip_whitespace(const char * text) {
     while (*text && isspace(*text)) {
         text++;
     }
-    return (char *)text;
-}
-
-char *skip_cellnum(const char *text) {
-    text = skip_whitespace(text);
-    if (isalpha(text[0])) {
-        ++text;
-        while (*text && isdigit(*text)) {
-            ++text;
-        }
-    }
-    return (char *)text;
-}
-
-char *skip_num(const char *text) {
-    text = skip_whitespace(text);
-    while(*text && (isdigit(*text) || *text == '.')) {++text;}
     return (char *)text;
 }
 
@@ -110,53 +89,57 @@ bool parse_formula(char *formula, double *dest) {
     if (!is_valid_formula(formula)) return false;
     double_stack numstack = make_double_stack();
     int opcount = 0;
-
-    while (*formula) { //parse formula
-        formula = skip_whitespace(formula);
-        if (isalpha(*formula)) {
-            if (!isdigit(formula[1])) {
-                return false; //check that col letter is followed by row number
-            }
-            ROWCOL pos;
-            pos.col = formula[0] - 'A';
-            pos.row = strtol(&formula[1], NULL, 10);
-            if (pos.row * pos.col < 0 || pos.row * pos.col > NUM_ROWS * NUM_COLS) { //if out of bounds
-                return false;
-            }
-            formula = skip_cellnum(formula);
-            double_stack_push(&numstack, sheet[pos.row][pos.col].numval);
-            //fetch value of specified cell and push onto the stack
-            continue;
-        }
-        else if (isdigit(*formula)) {
-            double_stack_push(&numstack, strtod(formula, &formula));
-            //strtod updates the formula pointer using the passed handle
-            continue;
+    while (*formula) {
+        if (formula[0] == '=' || formula[0] == ' ') {
+            ++formula;
         }
         else if (formula[0] == '+') {
             ++opcount;
             ++formula;
         }
-        else if (formula[0] == '=') {
-            ++formula;
+        else if (isalpha(*formula)) {
+            if (!isdigit(formula[1])) return false;
+            COL thisCol = (COL)(formula[0] - 'A');
+            ROW thisRow = strtol(++formula, &formula, 10) - 1;
+            if (thisCol * thisRow > NUM_COLS * NUM_ROWS || thisCol * thisRow < 0) return false;
+            double_stack_push(&numstack, sheet[thisRow][thisCol].numval); //fetch numval from cell
         }
-        else return false;
+        else if (isdigit(*formula) || *formula == '.') {
+            double_stack_push(&numstack, strtod(formula, &formula));
+        } else {
+            double_stack_delete(&numstack);
+            return false;
+        }
     }
 
-    if (numstack.size / 2 != opcount) {
-        *dest = 0;
+    if (numstack.size != opcount + 1) {
+        double_stack_delete(&numstack);
         return false;
     }
 
-    while (numstack.size && opcount) {
+    while (numstack.size > 0) {
         *dest += double_stack_pop(&numstack);
-        --opcount;
     }
 
+    double_stack_delete(&numstack);
     return true;
 }
 
+void update_cell_value(ROW row, COL col) {
+    if (sheet[row][col].type == EQN) {
+        if (parse_formula(sheet[row][col].strval, &(sheet[row][col].numval))) {
+            char *numStr = alloca(MAXLEN);
+            sprintf(numStr, "%lf", sheet[row][col].numval);
+            update_cell_display(row, col, numStr);
+        }
+
+    }
+}
+
 void set_cell_value(ROW row, COL col, char *text) {
+    if (sheet[row][col].type == NONE || sheet[row][col].strval == NULL) {
+        init_cell(row, col);
+    }
     if (is_valid_num(text)) {
         set_num_val(row, col, text);
     }
@@ -167,6 +150,14 @@ void set_cell_value(ROW row, COL col, char *text) {
                 sheet[row][col].type = EQN;
                 sprintf(text, "%lf\0", sheet[row][col].numval);
             }
+            else sprintf(text, "Error");
+        }
+    }
+    for (ROW i = ROW_1; i < NUM_ROWS; ++i) {
+        for (COL j = COL_A; j < NUM_COLS; ++j) {
+            if (!(i == row && j == col)) {
+                update_cell_value(i, j);
+            }
         }
     }
     update_cell_display(row, col, text);
@@ -176,19 +167,18 @@ void set_cell_value(ROW row, COL col, char *text) {
 void clear_cell(ROW row, COL col) {
     //frees mem allocated to string member
     free(sheet[row][col].strval);
-    sheet[row][col] = (cell){.type = NONE, .numval = 0, .strval = NULL};
-    // This just clears the display without updating any data structure. You will need to change this.
+    sheet[row][col] = (cell){.type = NONE, .numval = 0.0, .strval = NULL};
     update_cell_display(row, col, "");
 }
 
 char *get_textual_value(ROW row, COL col) {
-    cell *this = &sheet[row][col];
-    char *result = malloc(MAXLEN);
+    cell *this = &(sheet[row][col]);
+    char *result = calloc(MAXLEN, sizeof(char));
     switch (this->type) {
         case EQN:
         case NUM:
         case STR:
-            strncpy(result, this->strval, MAXLEN);
+            strncpy(result, this->strval, MAXLEN - 1);
             break;
         case NONE:
             *result = '\0';

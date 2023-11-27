@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEFAULT_EDIT_SIZE 128
+#define DEFAULT_EDIT_SIZE 256
 
 // Current cur_row and column.
 static ROW cur_row = ROW_1;
@@ -29,6 +29,7 @@ static void set_cell_attr(attr_t attr) {
 }
 
 static void ensure_edit_text_capacity(size_t capacity) {
+    void *temp = NULL;
     if (capacity <= edit_text_capacity)
         return;
     if (capacity < DEFAULT_EDIT_SIZE)
@@ -38,11 +39,14 @@ static void ensure_edit_text_capacity(size_t capacity) {
     if (edit_text == NULL) {
         edit_text = malloc(capacity);
         edit_text[0] = 0;
-    } else
-        edit_text = realloc(edit_text, capacity);
-    if (edit_text == NULL) {
+    } else {
+        temp = realloc(edit_text, capacity);
+    }
+    if (temp == NULL) {
         endwin();
         exit(ENOMEM);
+    } else {
+        edit_text = temp;
     }
     edit_text_capacity = capacity;
 }
@@ -143,8 +147,8 @@ int main(int argc, char **argv) {
         if (edit_text != NULL)
             free(edit_text);
         edit_text = get_textual_value(cur_row, cur_col);
-        edit_text_capacity = edit_text == NULL ? 0 : strlen(edit_text);
-        edit_text_length = edit_text_capacity;
+        edit_text_capacity = edit_text == NULL ? 0 : MAXLEN;
+        edit_text_length = strnlen(edit_text, MAXLEN);
         mvaddnstr(1, 1, blanks, total_width - 2);
         if (edit_text != NULL)
             mvaddnstr(1, 1, edit_text, total_width - 2);
@@ -162,6 +166,7 @@ int main(int argc, char **argv) {
         switch (c) {
             case 3: // Ctrl+C
                 endwin();
+                model_clear();
                 return 0;
             case KEY_UP:
                 if (cur_row > ROW_1)

@@ -7,6 +7,8 @@
 #define NUM_ROWS 10
 #define NUM_COLS 7
 
+#define MAXLEN 256
+
 // Rows of the spreadsheet.
 // NOTE: enums are 0-based, so the constant 'ROW_1' has the numerical value 0.
 typedef enum {

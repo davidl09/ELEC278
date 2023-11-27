@@ -17,7 +17,9 @@ const static size_t MAXLEN = 100;
 cell sheet[NUM_ROWS][NUM_COLS] = {0};
 
 char *skip_whitespace(const char * text) {
-    while (*text && isspace(*text)) {++text;}
+    while (*text && isspace(*text)) {
+        text++;
+    }
     return (char *)text;
 }
 
@@ -67,7 +69,7 @@ bool is_valid_formula(char *formula) {
 void set_num_val(ROW row, COL col, const char * const text) {
     //sets numval to val and sets str to str repr of val
     sheet[row][col].type = NUM;
-    sheet[row][col].numval = atol(text);
+    sheet[row][col].numval = strtod(text, NULL);
     strncpy(sheet[row][col].strval, text, MAXLEN);
 }
 
@@ -135,6 +137,10 @@ bool parse_formula(char *formula, double *dest) {
             ++opcount;
             ++formula;
         }
+        else if (formula[0] == '=') {
+            ++formula;
+        }
+        else return false;
     }
 
     if (numstack.size / 2 != opcount) {
@@ -157,8 +163,10 @@ void set_cell_value(ROW row, COL col, char *text) {
     else {
         set_string_val(row, col, text);
         if (is_valid_formula(text)) {
-            sheet[row][col].type = EQN;
-            parse_formula(text, &(sheet[row][col].numval));
+            if (parse_formula(text, &(sheet[row][col].numval))) {
+                sheet[row][col].type = EQN;
+                sprintf(text, "%lf\0", sheet[row][col].numval);
+            }
         }
     }
     update_cell_display(row, col, text);
@@ -175,12 +183,12 @@ void clear_cell(ROW row, COL col) {
 
 char *get_textual_value(ROW row, COL col) {
     cell *this = &sheet[row][col];
-    char *result = malloc(50);
+    char *result = malloc(MAXLEN);
     switch (this->type) {
         case EQN:
         case NUM:
         case STR:
-            strncpy(result, this->strval, 50);
+            strncpy(result, this->strval, MAXLEN);
             break;
         case NONE:
             *result = '\0';

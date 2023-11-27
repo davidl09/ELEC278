@@ -60,10 +60,11 @@ void set_string_val(ROW row, COL col, const char * const text) {
 
 void init_cell(ROW row, COL col) {
     //only place where allocation happens for a cell object (constructor)
-    sheet[row][col] = (cell){.type = STR, .numval = 0, .strval = malloc(MAXLEN)};
-    *(sheet[row][col].strval) = '\0';
+    if (sheet[row][col].type != NONE) return;
+    sheet[row][col] = (cell){.type = STR, .numval = 0, .strval = calloc(MAXLEN, sizeof(char))};
 }
 
+__attribute__((constructor))
 void model_init() {
     //iterate over global variable declared above;
     for (ROW row = ROW_1; row < NUM_ROWS; row++) {
@@ -74,6 +75,7 @@ void model_init() {
     }
 }
 
+__attribute__((destructor))
 void model_clear() {
     //iterate over global variable declared above;
     for (ROW row = ROW_1; row < NUM_ROWS; row++) {
@@ -129,7 +131,7 @@ void update_cell_value(ROW row, COL col) {
     if (sheet[row][col].type == EQN) {
         if (parse_formula(sheet[row][col].strval, &(sheet[row][col].numval))) {
             char *numStr = alloca(MAXLEN);
-            sprintf(numStr, "%lf", sheet[row][col].numval);
+            sprintf(numStr, "%lg", sheet[row][col].numval);
             update_cell_display(row, col, numStr);
         }
 
@@ -148,7 +150,7 @@ void set_cell_value(ROW row, COL col, char *text) {
         if (is_valid_formula(text)) {
             if (parse_formula(text, &(sheet[row][col].numval))) {
                 sheet[row][col].type = EQN;
-                sprintf(text, "%lf\0", sheet[row][col].numval);
+                sprintf(text, "%lg", sheet[row][col].numval);
             }
             else sprintf(text, "Error");
         }
@@ -166,6 +168,7 @@ void set_cell_value(ROW row, COL col, char *text) {
 
 void clear_cell(ROW row, COL col) {
     //frees mem allocated to string member
+    if (sheet[row][col].type == NONE) return;
     free(sheet[row][col].strval);
     sheet[row][col] = (cell){.type = NONE, .numval = 0.0, .strval = NULL};
     update_cell_display(row, col, "");

@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
     /* MAIN LOOP */
 
     // Initialize data structure.
-    model_init();
+    //model_init();
 
     // String of blanks used by main loop.
     char blanks[total_width + 1];
@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
         switch (c) {
             case 3: // Ctrl+C
                 endwin();
-                model_clear();
+                //model_clear();
                 return 0;
             case KEY_UP:
                 if (cur_row > ROW_1)
@@ -279,6 +279,7 @@ int main(int argc, char **argv) {
                     goto handle_key;
                 case KEY_BACKSPACE:
                 case 0010: // ASCII backspace.
+                    edit_position = (edit_position > edit_text_length ? edit_text_length : edit_position);
                     if (edit_position > 0) {
                         edit_position--;
                         edit_text_length--;
@@ -315,7 +316,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    model_clear();
+    //model_clear();
     exit_curses(0);
     //free memory used by the data structure and by libncurses
 }

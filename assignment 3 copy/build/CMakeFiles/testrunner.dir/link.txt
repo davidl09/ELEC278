@@ -1,1 +1,0 @@
-/usr/bin/clang-16 -g CMakeFiles/testrunner.dir/testrunner.c.o CMakeFiles/testrunner.dir/tests.c.o CMakeFiles/model.dir/model.c.o -o testrunner 

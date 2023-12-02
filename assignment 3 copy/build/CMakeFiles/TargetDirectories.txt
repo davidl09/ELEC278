@@ -1,5 +1,0 @@
-/home/davidl09/ELEC278/assignment 3 copy/build/CMakeFiles/model.dir
-/home/davidl09/ELEC278/assignment 3 copy/build/CMakeFiles/interactive.dir
-/home/davidl09/ELEC278/assignment 3 copy/build/CMakeFiles/testrunner.dir
-/home/davidl09/ELEC278/assignment 3 copy/build/CMakeFiles/edit_cache.dir
-/home/davidl09/ELEC278/assignment 3 copy/build/CMakeFiles/rebuild_cache.dir

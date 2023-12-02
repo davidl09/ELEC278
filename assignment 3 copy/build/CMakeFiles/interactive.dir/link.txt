@@ -1,0 +1,1 @@
+/usr/bin/clang-16 -g CMakeFiles/interactive.dir/interface.c.o CMakeFiles/model.dir/model.c.o -o interactive  -lcurses /usr/lib/x86_64-linux-gnu/libform.so 

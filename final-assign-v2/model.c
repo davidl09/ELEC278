@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "stack.h"
+#include "expression.h"
 
 DEFINE_STACK(double)
 //using macro in stack.h, creates struct and function definition for a stack data structure holding values of type double
@@ -13,6 +14,14 @@ DEFINE_STACK(double)
 
 
 cell sheet[NUM_ROWS][NUM_COLS] = {0};
+
+char *skip_whitespace(const char * text) {
+    //move 'text' pointer forward while there is no whitespace character, returning a pointer to the first char which is not a whitespace
+    while (*text && isspace(*text)) {
+        text++;
+    }
+    return (char *)text;
+}
 
 /**
  * @brief Removes leading and trailing whitespace characters from a given string.
@@ -26,13 +35,7 @@ cell sheet[NUM_ROWS][NUM_COLS] = {0};
  *         If the input string is NULL, NULL is returned.
  */
 
-char *skip_whitespace(const char * text) {
-    //move 'text' pointer forward while there is no whitespace character, returning a pointer to the first char which is not a whitespace
-    while (*text && isspace(*text)) {
-        text++;
-    }
-    return (char *)text;
-}
+
 
 bool/**
      * @brief Checks if a given string represents a valid number.
@@ -256,13 +259,10 @@ bool parse_formula(char *formula, double *dest) {
 /***/
 
 void update_cell_value(ROW row, COL col) {
-    if (sheet[row][col].type == EQN) {
-        if (parse_formula(sheet[row][col].strval, &(sheet[row][col].numval))) {
-            char *numStr = alloca(MAXLEN);
-            sprintf(numStr, "%lg", sheet[row][col].numval);
-            update_cell_display(row, col, numStr);
-        }
-
+    if (sheet[row][col].type == EQN && sheet[row][col].isValid) {
+        char *numStr = alloca(MAXLEN);
+        sprintf(numStr, "%lg", evaluate(sheet[row][col].expression));
+        update_cell_display(row, col, numStr);
     }
 }
 
@@ -281,7 +281,8 @@ void update_cell_value(ROW row, COL col) {
  */
 
 void set_cell_value(ROW row, COL col, char *text) {
-    if (sheet[row][col].type == NONE || sheet[row][col].strval == NULL) {
+    cell *this = &(sheet[row][col]);
+    if (this->type == NONE || this->strval == NULL) {
         init_cell(row, col);
     }
     if (is_valid_num(text)) {
@@ -289,11 +290,16 @@ void set_cell_value(ROW row, COL col, char *text) {
     }
     else {
         set_string_val(row, col, text);
-        if (maybe_formula(text) && is_valid_formula(text) && parse_formula(text, &(sheet[row][col].numval))) {
-            sheet[row][col].type = EQN;
-            sprintf(text, "%lg", sheet[row][col].numval);
-        } else {
-            sprintf(text, "#ERROR");
+        if (maybe_formula(text)) {
+            this->type = EQN;
+            this->isValid = makeTreeExpr(text + 1, &(this->expression));
+            if (this->isValid) {
+                this->numval = evaluate(this->expression);
+                sprintf(text, "%lg", this->numval);
+            }
+            else {
+                sprintf(text, "#ERROR");
+            }
         }
     }
     for (ROW i = ROW_1; i < NUM_ROWS; ++i) {
@@ -321,6 +327,9 @@ void set_cell_value(ROW row, COL col, char *text) {
 void clear_cell(ROW row, COL col) {
     //frees mem allocated to string member
     if (sheet[row][col].type == NONE) return;
+    if (sheet[row][col].type == EQN) {
+        deleteTreeNode(sheet[row][col].expression);
+    }
     free(sheet[row][col].strval);
     sheet[row][col] = (cell){.type = NONE, .numval = 0.0, .strval = NULL};
     update_cell_display(row, col, "");

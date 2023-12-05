@@ -3,6 +3,10 @@
 
 #include "defs.h"
 
+extern cell sheet[NUM_ROWS][NUM_COLS];
+
+char *skip_whitespace(const char * text);
+
 // Initializes the data structure.
 //
 // This is called once, at program start.

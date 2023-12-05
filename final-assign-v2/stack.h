@@ -21,7 +21,7 @@ type *temp = malloc                             \
 (2 * stack->capacity * sizeof(type));           \
 if(temp) {                                      \
 memcpy(temp, stack->base,                       \
-2 * stack->capacity * sizeof(type));            \
+stack->capacity * sizeof(type));                \
 stack->capacity *= 2;                           \
 free(stack->base);                              \
 stack->base = temp;                             \
@@ -40,7 +40,7 @@ type type##_stack_pop(type##_stack *stack){     \
 if(stack->size == 0) {                          \
 fprintf(stderr, "Error: "                       \
 "Tried popping from empty stack");              \
-exit(EXIT_FAILURE);                             \
+assert(stack->size > 0);                        \
 }                                               \
 --stack->size;                                  \
 --stack->sp;                                    \

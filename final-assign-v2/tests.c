@@ -5,22 +5,25 @@
 #include "model.h"
 #include "testrunner.h"
 #include "tests.h"
+#include "expression.h"
 
 void run_tests() {
-//    treeNode *root;
-//    assert(makeTreeExpr("3+4", &root));
-//    assert(evaluate(root) == 3+4);
-//    deleteTreeNode(root);
-//    while (true) {
-//        char expr[100];
-//        printf("Enter an expression\n");
-//        scanf("%s", expr);
-//        if (makeTreeExpr(expr, &root)) {
-//            printf("%s = %lf\n", expr, evaluate(root));
-//            deleteTreeNode(root);
-//        }
-//        else printf("Error\n");
-//    }
+ /*
+    treeNode *root;
+    assert(makeTreeExpr("3+4", &root));
+    assert(evaluate(root) == 3+4);
+    deleteTreeNode(root);
+    while (true) {
+        char expr[100];
+        printf("Enter an expression\n");
+        scanf("%s", expr);
+        if (makeTreeExpr(expr, &root)) {
+            printf("%s = %lg\n", expr, evaluate(root));
+            deleteTreeNode(root);
+        }
+        else printf("Error\n");
+    }
+    */
 
     set_cell_value(ROW_2, COL_A, strdup("1.4"));
     assert_display_text(ROW_2, COL_A, strdup("1.4"));

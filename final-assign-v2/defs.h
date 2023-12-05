@@ -14,7 +14,7 @@
 
 // Rows of the spreadsheet.
 // NOTE: enums are 0-based, so the constant 'ROW_1' has the numerical value 0.
-typedef enum : int {
+typedef enum row_t : uint8_t {
     ROW_1,
     ROW_2,
     ROW_3,
@@ -27,7 +27,7 @@ typedef enum : int {
     ROW_10,
 } ROW;
 
-typedef enum : int {
+typedef enum col_t : uint8_t {
     COL_A,
     COL_B,
     COL_C,
@@ -42,7 +42,7 @@ typedef struct ROWCOL {
     COL col;
 } ROWCOL;
 
-typedef enum {
+typedef enum cell_t : uint8_t {
     NONE,
     STR,
     NUM,
@@ -54,10 +54,8 @@ typedef struct treeNode treeNode;
 typedef struct cell {
     CELL_TYPE type;
     double numval;
-    struct {
-        treeNode *expression;
-        bool isValid;
-    };
+    treeNode *expression;
+    bool isValid;
     char *strval;
 } cell;
 
@@ -67,13 +65,6 @@ typedef enum nodeType : uint8_t {
     OPERATOR,
     TOK_OPERATOR, //used to indicate validity of precedence field in union in treeNode struct
 } nodeType;
-
-typedef enum operator : uint8_t {
-    PLUS,
-    MINUS,
-    TIMES,
-    DIVIDE,
-} operatorType;
 
 typedef double (*nodeFunc)(double, double);
 

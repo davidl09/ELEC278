@@ -10,6 +10,8 @@ add_library(model OBJECT
         expression.c
 )
 
+target_link_libraries(model PUBLIC m)
+
 add_executable(interactive
         interface.c
 )

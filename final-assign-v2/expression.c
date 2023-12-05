@@ -3,8 +3,11 @@
 //
 
 #include <ctype.h>
+#include <math.h>
+
 #include "expression.h"
 #include "defs.h"
+
 
 DEFINE_STACK(treeNode)
 
@@ -117,12 +120,12 @@ int precedence(const char input) {
 
 double evaluate(treeNode *node) {
     switch (node->type) {
-        case VALUE:
-            return node->value;
         case VALUEREF:
             return *(node->valueRef);
         case OPERATOR:
             return node->func(evaluate(node->left), evaluate(node->right));
+        default:
+            return node->value;
     }
 }
 
@@ -147,6 +150,8 @@ nodeFunc getFunc(char operator) {
             return multiply;
         case '/':
             return divide;
+        case '^':
+            return pow;
         default:
             return add;
     }
@@ -163,7 +168,7 @@ bool/**
      */
 
 isOperator(const char input) {
-    return input == '+' || input == '-' || input == '*' || input == '/';
+    return input == '+' || input == '-' || input == '*' || input == '/' || input == '^';
 }
 
 bool/**
@@ -205,10 +210,10 @@ nextToken(const char **input, treeNode *result) {
         return true;
     }
     else if (isalpha(**input)) {
-        COL col = (COL)(toupper(**input) - 'A');
+        int col = (toupper(**input) - 'A');
         const char *errTemp = *input;
         ++(*input);
-        ROW row = (ROW)(strtol(*input, (char **)input, 10)) - 1;
+        int row = (int)strtol(*input, (char **)input, 10) - 1;
         if (
                 col < COL_A || col >= NUM_COLS
                 ||

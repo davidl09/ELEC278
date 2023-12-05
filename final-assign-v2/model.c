@@ -68,42 +68,6 @@ bool maybe_formula(const char *formula) {
     return *formula == '=';
 }
 
-bool/**
-     * @brief Checks if a given formula is valid.
-     *
-     * This function checks if a given formula is valid based on the following criteria:
-     *  - The formula must not be empty.
-     *  - The formula must contain at least one opening and one closing parenthesis.
-     *  - The opening and closing parentheses must be properly nested.
-     *
-     * @param formula The formula to be checked.
-     *
-     * @return true if the formula is valid, false otherwise.
-     */
-
-is_valid_formula(char *formula) {
-    //checks if the string can be parsed as a valid formula
-    //autocapitalizes any characters in the formula
-    formula = skip_whitespace(formula);
-    if (formula[0] != '=') return false;
-    ++formula; //skip '=' sign
-    for (; *formula; ++formula) {
-        formula = skip_whitespace(formula);
-        if (isalpha(*formula)) {
-            if (islower(*formula)) {
-                *formula = (char)toupper(*formula);
-            }
-            char *temp = formula + 1; //temp pointer to check if row index could be parsed
-            long row = strtol(formula + 1, &temp, 10);
-            row -= 1; // ROW_1 has value 0
-            if (formula + 1 == temp || row < 0 || row >= NUM_ROWS) return false;
-        } else if (isdigit(*formula) || *formula == '.' || *formula == '+') {
-            continue;
-        } else return false;
-    }
-    return true;
-}
-
 /**
  * @brief Sets a numeric value to the specified cell in a spreadsheet.
  *
@@ -202,61 +166,6 @@ void model_clear() {
         }
     }
 }
-
-/**
- * @brief Parses a formula and extracts the result.
- *
- * This function takes a formula as input and parses it to extract the result. The formula
- * must be a null-terminated string. The result of the formula will be stored in the 'dest' variable.
- *
- * @param[in] formula The formula to be parsed.
- * @param[out] dest Pointer to the variable where the result will be stored.
- *
- * @retval void
- */
-
-bool parse_formula(char *formula, double *dest) {
-    *dest = 0;
-    if (!is_valid_formula(formula)) return false; //check validity
-    double_stack numstack = make_double_stack(); //defined with macro from stack.h
-    int opcount = 0;
-    while (*formula) {
-        if (formula[0] == '=' || formula[0] == ' ') {
-            ++formula;
-        }
-        else if (formula[0] == '+') {
-            ++opcount;
-            ++formula;
-        }
-        else if (isalpha(*formula)) {
-            if (!isdigit(formula[1])) return false;
-            COL thisCol = (COL)(formula[0] - 'A');
-            ROW thisRow = strtol(++formula, &formula, 10) - 1;
-            if (thisCol * thisRow > NUM_COLS * NUM_ROWS || thisCol * thisRow < 0) return false;
-            double_stack_push(&numstack, sheet[thisRow][thisCol].numval); //fetch numval from cell
-        }
-        else if (isdigit(*formula) || *formula == '.') {
-            double_stack_push(&numstack, strtod(formula, &formula));
-        } else {
-            double_stack_delete(&numstack); //free memory associated with stack
-            return false;
-        }
-    }
-
-    if (numstack.size != opcount + 1) {
-        double_stack_delete(&numstack);
-        return false;
-    }
-
-    while (numstack.size > 0) {
-        *dest += double_stack_pop(&numstack);
-    }
-
-    double_stack_delete(&numstack);
-    return true;
-}
-
-/***/
 
 void update_cell_value(ROW row, COL col) {
     if (sheet[row][col].type == EQN && sheet[row][col].isValid) {

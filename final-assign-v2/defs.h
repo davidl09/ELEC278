@@ -10,6 +10,8 @@
 
 #define MAXLEN 256
 
+#include <stdint.h>
+
 // Rows of the spreadsheet.
 // NOTE: enums are 0-based, so the constant 'ROW_1' has the numerical value 0.
 typedef enum : int {
@@ -59,14 +61,14 @@ typedef struct cell {
     char *strval;
 } cell;
 
-typedef enum nodeType : unsigned char {
+typedef enum nodeType : uint8_t {
     VALUE,
     VALUEREF,
     OPERATOR,
     TOK_OPERATOR, //used to indicate validity of precedence field in union in treeNode struct
 } nodeType;
 
-typedef enum operator : unsigned char {
+typedef enum operator : uint8_t {
     PLUS,
     MINUS,
     TIMES,

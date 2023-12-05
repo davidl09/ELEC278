@@ -261,7 +261,8 @@ bool parse_formula(char *formula, double *dest) {
 void update_cell_value(ROW row, COL col) {
     if (sheet[row][col].type == EQN && sheet[row][col].isValid) {
         char *numStr = alloca(MAXLEN);
-        sprintf(numStr, "%lg", evaluate(sheet[row][col].expression));
+        sheet[row][col].numval = evaluate(sheet[row][col].expression);
+        sprintf(numStr, "%lg", sheet[row][col].numval);
         update_cell_display(row, col, numStr);
     }
 }

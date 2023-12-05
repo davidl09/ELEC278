@@ -14,6 +14,7 @@ DEFINE_STACK(treeNode)
 DEFINE_FIFO(treeNode)
 
 
+
 /**
  * @brief Adds two double values together.
  *
@@ -318,14 +319,20 @@ shuntingYard(const char *input, treeNode_stack *outputStack) {
 
 void deleteTreeNode(treeNode *node) {
     if (node->type == OPERATOR) {
-        if (node->right)
+        if (node->right) {
             deleteTreeNode(node->right);
-        if (node->left)
+            free(node->right);
+            node->right = NULL;
+        }
+        if (node->left) {
             deleteTreeNode(node->left);
+            free(node->left);
+            node->left = NULL;
+        }
     }
 }
 
-bool/**
+/**
      * @brief Creates a binary expression tree from the given input string.
      *
      * The function constructs a binary expression tree by parsing the input string.
@@ -353,7 +360,7 @@ bool/**
      * @endcode
      */
 
-makeTreeExpr(const char *input, treeNode **result) {
+bool makeTreeExpr(const char *input, treeNode **result) {
     treeNode_stack  outStack = make_treeNode_stack(),
                     inStack;
     if (!shuntingYard(input, &inStack)) {
@@ -411,73 +418,3 @@ makeTreeExpr(const char *input, treeNode **result) {
     treeNode_stack_delete(&outStack);
     return true;
 }
-
-bool/**
-
-     * \brief Converts the given input expression string to an expression.
-
-     *
-     * This function takes a null-terminated input string and converts it to an expression
-     * representation. The expression is stored in the provided result parameter.
-
-     *
-     * \param input The input expression string to be converted.
-     * \param result Pointer to the expression structure where the result will be stored.
-     * \return None.
-
-
-
-     * \warning The provided result parameter must be a valid memory address.
-     * \warning The input expression string must be a valid mathematical expression.
-     * \warning The result structure will be modified, use a copy if necessary.
-
-     *
-
-     * \example
-     * expression result;
-     * makeExpression("2 + 3 * 4", &result);
-     * // The expression "2 + 3 * 4" will be converted and stored in result.
-     */
-
-makeExpression(const char *input, expression *result) {
-    *result = (expression) {
-            .root = NULL,
-            .strVal = strdup(input)
-    };
-    if (!makeTreeExpr(input, &result->root)) {
-        free((void *)result->strVal);
-        return false;
-    }
-    return true;
-}
-
-bool/**
-     * @brief Evaluate a mathematical expression and compute the result.
-     *
-     * This function takes a string representation of a mathematical expression
-     * and computes the result of the expression. The expression can contain
-     * numbers, arithmetic operators (+, -, *, /), and parentheses for grouping.
-     *
-     * @param expr The mathematical expression to evaluate.
-     * @param result Pointer to a double variable where the result will be stored.
-     *               The function will update the value at the memory location
-     *               pointed to by this pointer.
-     *
-     * @return -1 if there was an error evaluating the expression,
-     *         0 if the expression was valid and successfully evaluated.
-     *
-     * @remark The expression must be a null-terminated string.
-     *
-     * @note The result pointer must not be NULL.
-     */
-
-evalExpression(const char *expr, double *result) {
-    if (!expr) return false;
-    expression e;
-    if (!makeExpression(expr, &e)) return false;
-
-    *result = evaluate(e.root);
-    return true;
-}
-
-

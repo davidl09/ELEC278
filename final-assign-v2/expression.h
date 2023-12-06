@@ -32,6 +32,8 @@ bool nextToken(const char **input, treeNode *result);
 
 bool makeTreeExpr(const char *input, treeNode **result);
 
+void deleteTree(treeNode *node);
+
 void deleteTreeNode(treeNode *node);
 
 bool evalExpression(const char *expression, double *result);

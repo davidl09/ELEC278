@@ -278,11 +278,11 @@ shuntingYard(const char *input, treeNode_stack *outputStack) {
                 break;
             case TOK_OPERATOR: {
                 while (operatorStack.size > 0 && operatorStack.sp->precedence >= current.precedence) {
-                    treeNode noTokOp = treeNode_stack_pop(&operatorStack);
-                    //the tree node is converted from a 'token' (which knows its precedence) to a full tree node (no children yet)
-                    noTokOp.type = OPERATOR;
-                    noTokOp.left = noTokOp.right = NULL;
-                    treeNode_stack_push(outputStack, noTokOp);
+                    treeNode operator = treeNode_stack_pop(&operatorStack);
+                    //the tree node is converted from a 'token' (which knows its precedence) to a full tree node (no precedence, no child nodes at this point)
+                    operator.type = OPERATOR;
+                    operator.left = operator.right = NULL;
+                    treeNode_stack_push(outputStack, operator);
                 }
                 treeNode_stack_push(&operatorStack, current);
                 break;
@@ -319,6 +319,7 @@ shuntingYard(const char *input, treeNode_stack *outputStack) {
   */
 
 void deleteTreeNode(treeNode *node) {
+    if (!node) return;
     if (node->type == OPERATOR) {
         if (node->right) {
             deleteTreeNode(node->right);
@@ -331,6 +332,11 @@ void deleteTreeNode(treeNode *node) {
             node->left = NULL;
         }
     }
+}
+
+void deleteTree(treeNode *node) {
+    deleteTreeNode(node);
+    free(node);
 }
 
 /**

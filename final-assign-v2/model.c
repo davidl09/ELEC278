@@ -241,7 +241,7 @@ void clear_cell(ROW row, COL col) {
     //frees mem allocated to string member
     if (sheet[row][col].type == NONE) return;
     if (sheet[row][col].type == EQN && sheet[row][col].isValid) {
-        deleteTreeNode(sheet[row][col].expression);
+        deleteTree(sheet[row][col].expression);
     }
     free(sheet[row][col].strval);
     sheet[row][col] = (cell){.type = NONE, .numval = 0.0, .strval = NULL, .expression = NULL};

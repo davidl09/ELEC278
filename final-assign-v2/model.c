@@ -123,7 +123,7 @@ void set_string_val(ROW row, COL col, const char * const text) {
 void init_cell(ROW row, COL col) {
     //only place where allocation happens for a cell object (constructor)
     if (sheet[row][col].type != NONE) return;
-    sheet[row][col] = (cell){.type = STR, .numval = 0, .strval = calloc(MAXLEN, sizeof(char))};
+    sheet[row][col] = (cell){.type = STR, .numval = 0, .isValid = false, .strval = calloc(MAXLEN, sizeof(char))};
 }
 
 /**
@@ -158,7 +158,7 @@ void model_init() {
 
 __attribute__((destructor))
 void model_clear() {
-    //iterate over global variable declared above;
+    //iterate over cell array and free memory
     for (ROW row = ROW_1; row < NUM_ROWS; row++) {
         for (COL col = COL_A; col < NUM_COLS; col++) {
             //fill sheet with empty strings
@@ -192,6 +192,9 @@ void update_cell_value(ROW row, COL col) {
 
 void set_cell_value(ROW row, COL col, char *text) {
     cell *this = &(sheet[row][col]);
+    if (this->type == EQN && this->isValid) {
+        deleteTreeNode(this->expression);
+    }
     if (this->type == NONE || this->strval == NULL) {
         init_cell(row, col);
     }
@@ -237,11 +240,11 @@ void set_cell_value(ROW row, COL col, char *text) {
 void clear_cell(ROW row, COL col) {
     //frees mem allocated to string member
     if (sheet[row][col].type == NONE) return;
-    if (sheet[row][col].type == EQN) {
+    if (sheet[row][col].type == EQN && sheet[row][col].isValid) {
         deleteTreeNode(sheet[row][col].expression);
     }
     free(sheet[row][col].strval);
-    sheet[row][col] = (cell){.type = NONE, .numval = 0.0, .strval = NULL};
+    sheet[row][col] = (cell){.type = NONE, .numval = 0.0, .strval = NULL, .expression = NULL};
     update_cell_display(row, col, "");
 }
 

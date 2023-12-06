@@ -226,6 +226,7 @@ nextToken(const char **input, treeNode *result) {
 //        if (!(sheet[row][col].type == EQN || sheet[row][col].type == NUM)) {
 //            return false;
 //        }
+
         //strtol advances input for us
         result->type = VALUEREF;
         result->valueRef = &(sheet[row][col].numval);
@@ -250,7 +251,7 @@ bool/**
 shuntingYard(const char *input, treeNode_stack *outputStack) {
     //outputStack points to an UNINITIALIZED treeNode_stack
     //this is an OWNING reference
-    //ownership is release upon successful execution of the function
+    //ownership is released upon successful execution of the function
 
     if (*input == 0) {
         //if not at end of string, parsing is not complete and an error occurred
@@ -286,7 +287,7 @@ shuntingYard(const char *input, treeNode_stack *outputStack) {
                 treeNode_stack_push(&operatorStack, current);
                 break;
             }
-            case OPERATOR:
+            case OPERATOR: //all operator nodes should have flag TOK_OPERATOR set at this point
                 fifo_treeNode_free(&inputQ);
                 treeNode_stack_delete(&operatorStack);
                 treeNode_stack_delete(outputStack);

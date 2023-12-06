@@ -14,7 +14,7 @@
 
 // Rows of the spreadsheet.
 // NOTE: enums are 0-based, so the constant 'ROW_1' has the numerical value 0.
-typedef enum row_t : uint8_t {
+typedef enum row_t {
     ROW_1,
     ROW_2,
     ROW_3,
@@ -27,7 +27,7 @@ typedef enum row_t : uint8_t {
     ROW_10,
 } ROW;
 
-typedef enum col_t : uint8_t {
+typedef enum col_t {
     COL_A,
     COL_B,
     COL_C,
@@ -42,7 +42,7 @@ typedef struct ROWCOL {
     COL col;
 } ROWCOL;
 
-typedef enum cell_t : uint8_t {
+typedef enum cell_t {
     NONE,
     STR,
     NUM,
@@ -50,16 +50,17 @@ typedef enum cell_t : uint8_t {
 } CELL_TYPE;
 
 typedef struct treeNode treeNode;
+//forward treeNode declaration and typedef
 
 typedef struct cell {
-    CELL_TYPE type;
     double numval;
     treeNode *expression;
-    bool isValid;
     char *strval;
+    CELL_TYPE type;
+    bool isValid;
 } cell;
 
-typedef enum nodeType : uint8_t {
+typedef enum nodeType {
     VALUE,
     VALUEREF,
     OPERATOR,
@@ -68,10 +69,10 @@ typedef enum nodeType : uint8_t {
 
 typedef double (*nodeFunc)(double, double);
 
-typedef struct treeNode {
+struct treeNode {
     union {
         struct {
-            union {
+            union { //node has either a precedence (Token mode) or two children (tree node mode)
                 struct {
                     struct treeNode *left,
                                     *right;
@@ -84,7 +85,7 @@ typedef struct treeNode {
         double *valueRef; //non-owning, points into sheet
     };
     nodeType type;
-} treeNode;
+};
 
 typedef struct expression {
     treeNode *root;

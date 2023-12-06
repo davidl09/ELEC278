@@ -24,9 +24,9 @@ double evaluate(treeNode *node);
 
 int precedence(char input);
 
-inline nodeFunc getFunc(char operator);
+nodeFunc getFunc(char operator);
 
-inline bool isOperator(char input);
+bool isOperator(char input);
 
 bool nextToken(const char **input, treeNode *result);
 

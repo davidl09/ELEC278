@@ -14,7 +14,6 @@ static char display[NUM_ROWS][NUM_COLS][CELL_DISPLAY_WIDTH + 1];
 
 int main() {
     memset(display, 0, sizeof(display));
-    model_init();
     run_tests();
     return 0;
 }

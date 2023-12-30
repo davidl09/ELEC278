@@ -1,0 +1,1 @@
+/usr/bin/gcc -O3 -DNDEBUG CMakeFiles/mergesort.dir/main.c.o -o mergesort 

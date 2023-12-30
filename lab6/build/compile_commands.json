@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/davidl09/ELEC278/lab6/build",
+  "command": "/usr/bin/clang-16   -g -std=gnu2x -o CMakeFiles/lab6.dir/main.c.o -c /home/davidl09/ELEC278/lab6/main.c",
+  "file": "/home/davidl09/ELEC278/lab6/main.c",
+  "output": "CMakeFiles/lab6.dir/main.c.o"
+}
+]

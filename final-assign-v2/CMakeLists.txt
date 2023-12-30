@@ -7,10 +7,17 @@ add_library(model OBJECT
         defs.h
         interface.h
         model.c
+)
+
+add_library(expression STATIC
         expression.c
 )
 
-target_link_libraries(model PUBLIC m)
+target_link_libraries(expression PUBLIC m)
+
+target_link_libraries(model PUBLIC
+        expression
+)
 
 add_executable(interactive
         interface.c
@@ -22,7 +29,7 @@ add_executable(testrunner
         tests.c
         tests.h
 )
-target_link_libraries(testrunner model)
+target_link_libraries(testrunner model expression)
 
 if(${MINGW})
         cmake_path(GET CMAKE_C_COMPILER PARENT_PATH BIN_DIR)

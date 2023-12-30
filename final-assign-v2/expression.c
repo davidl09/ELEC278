@@ -305,6 +305,7 @@ shuntingYard(const char *input, treeNode_stack *outputStack) {
 
     fifo_treeNode_free(&inputQ);
     treeNode_stack_delete(&operatorStack);
+    //treeNode_stack_delete(outputStack);
     return true;
 }
 
@@ -384,12 +385,13 @@ bool makeTreeExpr(const char *input, treeNode **result) {
                 break;
 
             case OPERATOR:
-                if (outStack.size < 2) {
+                if (outStack.size < 2) { //if there are insufficiently many tokens -> the expression is malformed
                     if (outStack.size == 1) {
-                        treeNode temp = treeNode_stack_pop(&outStack);
+                        treeNode temp = treeNode_stack_pop(&outStack); //pop last token and free it
                         deleteTreeNode(&temp);
                     }
                     treeNode_stack_delete(&outStack);
+                    treeNode_stack_delete(&inStack);
                     return false;
                 }
 
@@ -406,11 +408,14 @@ bool makeTreeExpr(const char *input, treeNode **result) {
                     deleteTreeNode(&temp);
                 }
                 treeNode_stack_delete(&outStack);
+                treeNode_stack_delete(&inStack);
                 return false;
             }
 
         }
     }
+
+    treeNode_stack_delete(&inStack); //free input stack
 
     if (outStack.size != 1) {
         if (outStack.size > 1) {

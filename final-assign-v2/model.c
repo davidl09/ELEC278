@@ -169,10 +169,13 @@ void model_clear() {
 
 void update_cell_value(ROW row, COL col) {
     if (sheet[row][col].type == EQN && sheet[row][col].isValid) {
-        char *numStr = alloca(MAXLEN);
-        sheet[row][col].numval = evaluate(sheet[row][col].expression);
-        sprintf(numStr, "%lg", sheet[row][col].numval);
-        update_cell_display(row, col, numStr);
+        if (sheet[row][col].isValid) {
+            char *numStr = alloca(MAXLEN);
+            sheet[row][col].numval = evaluate(sheet[row][col].expression);
+            sprintf(numStr, "%lg", sheet[row][col].numval);
+            update_cell_display(row, col, numStr);
+        }
+        else set_cell_value(row, col, strdup(sheet[row][col].strval));
     }
 }
 
@@ -205,15 +208,17 @@ void set_cell_value(ROW row, COL col, char *text) {
         set_string_val(row, col, text);
         if (maybe_formula(text)) {
             this->type = EQN;
-            this->isValid = makeTreeExpr(text + 1, &(this->expression));
+            this->isValid = makeTreeExpr(text + 1, &(this->expression)); // + 1 added to skip '=' character
             if (this->isValid) {
                 this->numval = evaluate(this->expression);
                 sprintf(text, "%lg", this->numval);
             }
             else {
                 sprintf(text, "#ERROR");
+                this->isValid = false;
             }
         }
+        else this->isValid = false;
     }
     for (ROW i = ROW_1; i < NUM_ROWS; ++i) {
         for (COL j = COL_A; j < NUM_COLS; ++j) {

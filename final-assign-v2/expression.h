@@ -10,8 +10,6 @@
 #include "defs.h"
 #include "model.h"
 
-
-
 double add(double lhs, double rhs);
 
 double subtract(double lhs, double rhs);
@@ -35,8 +33,5 @@ bool makeTreeExpr(const char *input, treeNode **result);
 void deleteTree(treeNode *node);
 
 void deleteTreeNode(treeNode *node);
-
-bool evalExpression(const char *expression, double *result);
-
 
 #endif //ASSIGNMENT_EXPRESSION_H

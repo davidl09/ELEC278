@@ -305,7 +305,7 @@ int main(int argc, char **argv) {
                     edit_text_length = 0;
                     goto handle_key;
                 default:
-                    if (isgraph(c)) {
+                    if (isgraph(c) || c == ' ') {
                         ensure_edit_text_capacity(edit_text_length + 1);
                         memmove(edit_text + edit_position + 1, edit_text + edit_position,
                                 edit_text_length - edit_position);

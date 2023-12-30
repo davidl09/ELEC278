@@ -87,9 +87,4 @@ struct treeNode {
     nodeType type;
 };
 
-typedef struct expression {
-    treeNode *root;
-    const char *strVal;
-} expression;
-
 #endif //ASSIGNMENT_DEFS_H

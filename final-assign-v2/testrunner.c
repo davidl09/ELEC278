@@ -8,13 +8,34 @@
 #include "model.h"
 #include "tests.h"
 #include "testrunner.h"
+#include "expression.h"
 
 
 static char display[NUM_ROWS][NUM_COLS][CELL_DISPLAY_WIDTH + 1];
 
-int main() {
+void run_calc() {
+    treeNode *root;
+    assert(makeTreeExpr("3+4", &root));
+    assert(evaluate(root) == 3+4);
+    deleteTreeNode(root);
+    while (true) {
+        char expr[100];
+        printf("Enter an expression\n");
+        scanf("%s", expr);
+        if (makeTreeExpr(expr, &root)) {
+            printf("%s = %lg\n", expr, evaluate(root));
+            deleteTreeNode(root);
+        }
+        else printf("Error\n");
+    }
+}
+
+int main(int argc, char *argv[]) {
     memset(display, 0, sizeof(display));
     run_tests();
+    if (argc > 1 && !strcmp(argv[1], "calc")) {
+        run_calc();
+    }
     return 0;
 }
 
